@@ -1,27 +1,9 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { Drawer } from 'expo-router/drawer';
+import { Stack } from 'expo-router';
 
-export default function ProfildrawerLayout() {
+export default function ProfilStackLayout() {
   return (
-    <Drawer
-      screenOptions={{
-        drawerActiveTintColor: '#ffd33d',
-      }}
-    >
-      <Drawer.Screen
-        name="index" // page profil principale
-        options={{
-          drawerLabel: 'Profil',
-          drawerIcon: ({ color }: { color: string }) => <Ionicons name="person" size={20} color={color} />,
-        }}
-      />
-      <Drawer.Screen
-        name="settings"
-        options={{
-          drawerLabel: 'Paramètres',
-          drawerIcon: ({ color }: { color: string }) => <Ionicons name="settings" size={20} color={color} />,
-        }}
-      />
-    </Drawer>
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" />
+    </Stack>
   );
 }

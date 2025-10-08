@@ -1,12 +1,17 @@
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Button, Image, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Button, Image, StyleSheet, Text, View } from 'react-native';
+import { useReservation } from '../../contexts/ReservationContext';
 
 export default function ExplorerDetail() {
   const { id } = useLocalSearchParams();
+  const { addReservation } = useReservation();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [showPicker, setShowPicker] = useState(false);
 
   useEffect(() => {
     const fetchOne = async () => {
@@ -63,8 +68,33 @@ export default function ExplorerDetail() {
         <Text style={styles.title}>{data.title}</Text>
         <Text style={styles.price}>{data.price} €/nuit</Text>
         <Text style={styles.desc}>{data.description ?? 'Aucune description fournie.'}</Text>
-        <View style={{ marginTop: 12 }}>
-          <Button title="Réserver" onPress={() => alert('Réservé !')} />
+        <View style={{ marginTop: 12, gap: 8 }}>
+          <View>
+            <Button title="Choisir une date" onPress={() => setShowPicker(true)} />
+            <Text style={{ marginTop: 8 }}>Date sélectionnée: {selectedDate.toISOString().slice(0, 10)}</Text>
+          </View>
+          {showPicker ? (
+            <DateTimePicker
+              value={selectedDate}
+              mode="date"
+              display="default"
+              onChange={(_, date) => {
+                setShowPicker(false);
+                if (date) setSelectedDate(date);
+              }}
+            />
+          ) : null}
+          <Button
+            title="Réserver"
+            onPress={() => {
+              try {
+                addReservation({ logementId: String(id), nom: data.title, date: selectedDate.toISOString().slice(0, 10) });
+                Alert.alert('Succès', 'Réservation enregistrée');
+              } catch (e) {
+                Alert.alert('Erreur', String(e?.message ?? e));
+              }
+            }}
+          />
         </View>
       </View>
     </>
